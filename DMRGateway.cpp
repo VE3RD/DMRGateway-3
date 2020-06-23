@@ -82,7 +82,7 @@ const char* HEADER1 = "This software is for use on amateur radio networks only,"
 const char* HEADER2 = "it is to be used for educational purposes only. Its use on";
 const char* HEADER3 = "commercial networks is strictly prohibited.";
 const char* HEADER4 = "Copyright(C) 2017-2020 by Jonathan Naylor, G4KLX and others";
-const char* HEADER5 = "Network 6, and 7 digit isolation Code added by VE3RD";
+const char* HEADER5 = "Network 6 added, and 7 digit isolation Code added by VE3RD";
 
 int main(int argc, char** argv)
 {
@@ -187,6 +187,7 @@ m_dmr4SrcRewrites(),
 m_dmr5NetRewrites(),
 m_dmr5RFRewrites(),
 m_dmr5SrcRewrites(),
+m_dmr6NetRewrites(),
 m_dmr6RFRewrites(),
 m_dmr6SrcRewrites(),
 m_dmr1Passalls(),
@@ -458,6 +459,11 @@ int CDMRGateway::run()
 		if (!ret)
 			return 1;
 	}
+	if (m_conf.getDMRNetwork6Enabled()) {
+		ret = createDMRNetwork6();
+		if (!ret)
+			return 1;
+	}
 
 	if (m_conf.getDynamicTGControlEnabled()) {
 		bool ret = createDynamicTGControl();
@@ -673,7 +679,7 @@ int CDMRGateway::run()
 				LogInfo("Selected Network =%d",selnet);
                         }
 
-                       if(dstId >= 90000 && dstId <= 90005){
+                       if(dstId >= 90000 && dstId <= 90006){
                                 ctrlCode=1;
                                 LogDebug("TESTAA Network keyed: %d", dstId);
                                 selnet = dstId-90000;
@@ -779,7 +785,7 @@ if (dstId !=0){
 						// Rewrite the slot and/or TG or neither
 						for (std::vector<CRewrite*>::iterator it = m_dmr4RFRewrites.begin(); it != m_dmr4RFRewrites.end(); ++it) {
 							PROCESS_RESULT res = (*it)->process(data, trace);
-							if (res != RESULT_UNMATCHED && net3ok) {
+							if (res != RESULT_UNMATCHED && net4ok) {
 								result = res;
 								break;
 							}
@@ -825,7 +831,7 @@ if (dstId !=0){
 						// Rewrite the slot and/or TG or neither
 						for (std::vector<CRewrite*>::iterator it = m_dmr6RFRewrites.begin(); it != m_dmr6RFRewrites.end(); ++it) {
 							PROCESS_RESULT res = (*it)->process(data, trace);
-							if (res != RESULT_UNMATCHED && net3ok) {
+							if (res != RESULT_UNMATCHED && net6ok) {
 								result = res;
 								break;
 							}
