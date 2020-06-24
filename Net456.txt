@@ -1,0 +1,42 @@
+
+[DMR Network 4]
+Enabled=1
+Name=TGIF_Network
+Address=tgif.network
+Port=62031
+Local=62037
+Id=302395444
+TGRewrite0=2,4000001,2,1,999999
+TGRewrite1=2,1,2,1,999999
+PassAllPC1=2
+PassAllTG1=2
+Password=passw0rd
+Location=0
+Debug=1
+
+[DMR Network 5]
+Enabled=1
+Name=Prime_TGIF_Network
+Address=prime.tgif.network
+Port=62031
+Local=62035
+Id=302395454
+TGRewrite0=2,5000001,2,1,999999
+Password=??????????
+Location=0
+Debug=1
+
+[DMR Network 6]
+Enabled=1
+Name=MNet_Network
+Address=mnet.hopto.org
+Port=62031
+Local=62038
+TGRewrite0=2,6000001,2,1,999999
+Password=?????????????
+Id=302395464
+Location=0
+Debug=1
+
+
+
