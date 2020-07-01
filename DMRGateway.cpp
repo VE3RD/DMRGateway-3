@@ -62,6 +62,7 @@ static int  m_signal = 0;
 static int mult = 0;
 static int ctrlCode = 0;
 static int selnet = 0;
+static int StartNet = 0;
 static bool net0ok = false;
 static bool net1ok = false;
 static bool net2ok = false;
@@ -382,6 +383,7 @@ int CDMRGateway::run()
 		return 1;
 
 	LogMessage("Waiting for MMDVM to connect.....");
+	
 
 	while (!m_killed) {
 		m_configLen = m_repeater->getConfig(m_config);
@@ -663,7 +665,7 @@ int CDMRGateway::run()
 					trace = true;
 				}
 
-				if (trace)
+				if (ruleTrace)
 					LogDebug("Rule Trace, RF transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 
 				PROCESS_RESULT result = RESULT_UNMATCHED;
@@ -676,14 +678,14 @@ int CDMRGateway::run()
                                 LogDebug("Calculated Network = %d",mult);
                                 dstId = dstId - (mult * 1000000);
                                 LogDebug("Calculated TG = %d",dstId);
-				LogInfo("Selected Network =%d",selnet);
+				if (ruleTrace) LogInfo("Selected Network =%d",selnet);
                         }
 
-                       if(dstId >= 90000 && dstId <= 90006){
+                       if(dstId >= 90000 && dstId <= 90007){
                                 ctrlCode=1;
                                 LogDebug("TESTAA Network keyed: %d", dstId);
                                 selnet = dstId-90000;
-				LogInfo("Selected Network =%d",selnet);
+				if (ruleTrace) LogInfo("Selected Network =%d",selnet);
 				dstId=0;
 //                                  if (voice != NULL) {
 //                                        voice->linkedToNet(selnet,dstId);
@@ -702,16 +704,18 @@ int CDMRGateway::run()
                         net4ok=false;
                         net5ok=false;
                         net6ok=false;
-if (dstId !=0){
-                        if (m_dmrNetwork1 != NULL && ctrlCode == 0 && (selnet==1 || selnet==0)) net1ok=true;
-                        if (m_dmrNetwork2 != NULL && ctrlCode == 0 && (selnet==2 || selnet==0)) net2ok=true;
-                        if (m_dmrNetwork3 != NULL && ctrlCode == 0 && (selnet==3 || selnet==0)) net3ok=true;
-                        if (m_dmrNetwork4 != NULL && ctrlCode == 0 && (selnet==4 || selnet==0)) net4ok=true;
-                        if (m_dmrNetwork5 != NULL && ctrlCode == 0 && (selnet==5 || selnet==0)) net5ok=true;
-                        if (m_dmrNetwork6 != NULL && ctrlCode == 0 && (selnet==6 || selnet==0)) net6ok=true;
-                        if (selnet==0) net0ok=true;
 
-}
+			if (dstId !=0){
+                        	if (m_dmrNetwork1 != NULL && ctrlCode == 0 && (selnet==1 || selnet==0)) net1ok=true;
+                        	if (m_dmrNetwork2 != NULL && ctrlCode == 0 && (selnet==2 || selnet==0)) net2ok=true;
+                        	if (m_dmrNetwork3 != NULL && ctrlCode == 0 && (selnet==3 || selnet==0)) net3ok=true;
+                        	if (m_dmrNetwork3 != NULL && ctrlCode == 0 && (selnet==7 || selnet==0)) net3ok=true;
+                        	if (m_dmrNetwork4 != NULL && ctrlCode == 0 && (selnet==4 || selnet==0)) net4ok=true;
+                        	if (m_dmrNetwork5 != NULL && ctrlCode == 0 && (selnet==5 || selnet==0)) net5ok=true;
+                        	if (m_dmrNetwork6 != NULL && ctrlCode == 0 && (selnet==6 || selnet==0)) net6ok=true;
+                        	if (selnet==0) net0ok=true;
+
+			}
 				if (m_dmrNetwork1 != NULL) {
 
 					// Rewrite the slot and/or TG or neither
@@ -2704,6 +2708,7 @@ unsigned int CDMRGateway::getConfig(const std::string& name, unsigned char* buff
 	float lon = m_conf.getInfoLongitude();
 	::sprintf(longitude, "%09f", lon);
 
+	StartNet = m_conf.getStartNet();
 	unsigned int power = m_conf.getInfoPower();
 	if (power > 99U)
 		power = 99U;
