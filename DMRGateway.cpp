@@ -62,7 +62,7 @@ static int  m_signal = 0;
 static int mult = 0;
 static int ctrlCode = 0;
 static int selnet = 0;
-	
+unsigned int  storedtg =0;	
 static bool net1ok = false;
 static bool net2ok = false;
 static bool net3ok = false;
@@ -412,6 +412,7 @@ int CDMRGateway::run()
         case 3 : net3ok = true;
         case 4 : net4ok = true;
         case 5 : net5ok = true;
+        case 6 : net6ok = true;
         }
 
 
@@ -528,7 +529,8 @@ int CDMRGateway::run()
 
                                 ctrlCode=0;
 
-                       		if ( dstId > 999999 ) {
+                       		if ( dstId > 999999  && dstId != storedtg) {
+					storedtg=dstId;
                                 	if ( trace ) LogInfo("Radio TG Keyed = %d",dstId);
                                 	mult = (dstId / 1000000);
                                 	selnet = mult;
@@ -536,7 +538,6 @@ int CDMRGateway::run()
                //                 	dstId = dstId - (mult * 1000000);
                                 	LogDebug("Calculated TG = %d",dstId);
 					if (trace) LogInfo("Selected 7x Network = %d",selnet);
-
         	 	        	net1ok=false;
                         		net1ok=false;
                         		net2ok=false;
@@ -544,20 +545,28 @@ int CDMRGateway::run()
                        	 		net4ok=false;
                         		net5ok=false;
                         		net6ok=false;
+				        switch(selnet) {
+        					case 1 : if (m_dmrNetwork1 != NULL)  net1ok=true;
+        					case 2 : if (m_dmrNetwork2 != NULL)  net2ok=true;
+        					case 3 : if (m_dmrNetwork3 != NULL)  net3ok=true;
+        					case 4 : if (m_dmrNetwork4 != NULL)  net4ok=true;
+        					case 5 : if (m_dmrNetwork5 != NULL)  net5ok=true;
+        					case 6 : if (m_dmrNetwork6 != NULL)  net6ok=true;
+					}
+     //                   		if (m_dmrNetwork1 != NULL && ctrlCode == 0 && (selnet==1 || selnet==0)) net1ok=true;
+     //                   		if (m_dmrNetwork2 != NULL && ctrlCode == 0 && (selnet==2 || selnet==0)) net2ok=true;
+	//
+    //                    		if (m_dmrNetwork3 != NULL && ctrlCode == 0 && (selnet==3 || selnet==0)) net3ok=true;
+    //                    		if (m_dmrNetwork3 != NULL && ctrlCode == 0 && (selnet==7 || selnet==0)) net3ok=true;
 
-                        		if (m_dmrNetwork1 != NULL && ctrlCode == 0 && (selnet==1 || selnet==0)) net1ok=true;
-                        		if (m_dmrNetwork2 != NULL && ctrlCode == 0 && (selnet==2 || selnet==0)) net2ok=true;
-
-                        		if (m_dmrNetwork3 != NULL && ctrlCode == 0 && (selnet==3 || selnet==0)) net3ok=true;
-                        		if (m_dmrNetwork3 != NULL && ctrlCode == 0 && (selnet==7 || selnet==0)) net3ok=true;
-
-                        		if (m_dmrNetwork4 != NULL && ctrlCode == 0 && (selnet==4 || selnet==0)) net4ok=true;
-                        		if (m_dmrNetwork5 != NULL && ctrlCode == 0 && (selnet==5 || selnet==0)) net5ok=true;
-                        		if (m_dmrNetwork6 != NULL && ctrlCode == 0 && (selnet==6 || selnet==0)) net6ok=true;
+    //                    		if (m_dmrNetwork4 != NULL && ctrlCode == 0 && (selnet==4 || selnet==0)) net4ok=true;
+    //                    		if net4ok == false if (m_dmrNetwork5 != NULL && ctrlCode == 0 && (selnet==5 || selnet==0)) net5ok=true;
+    //                    		if net4ok == false && net5ok=false if (m_dmrNetwork6 != NULL && ctrlCode == 0 && (selnet==6 || selnet==0)) net6ok=true;
                         	}
 
-                       		if ( dstId >= 90000 && dstId <= 90007 ){
+                       		if ( dstId >= 90000 && dstId <= 90007 && dstId != storedtg ){
                                 	ctrlCode=1;
+					storedtg=dstId;
                                 	if ( trace ) LogInfo("TESTAA Network keyed: %d", dstId);
                                 	selnet = dstId-90000;
 					if (trace) LogInfo("Selected 9000x Network = %d",selnet);
@@ -596,7 +605,7 @@ int CDMRGateway::run()
 					if (net6ok) LogInfo(" Network 6 Live %d", net6ok);
 				}
 
-				if (m_dmrNetwork1 != NULL) {
+				if (m_dmrNetwork1 != NULL && net1ok) {
 
 					// Rewrite the slot and/or TG or neither
 					for (std::vector<CRewrite*>::iterator it = m_dmr1RFRewrites.begin(); it != m_dmr1RFRewrites.end(); ++it) {
@@ -620,7 +629,7 @@ int CDMRGateway::run()
 					}
 				}
 
-				if (result == RESULT_UNMATCHED) {
+				if (result == RESULT_UNMATCHED && net2ok) {
 					if (m_dmrNetwork2 != NULL) {
 						// Rewrite the slot and/or TG or neither
 						for (std::vector<CRewrite*>::iterator it = m_dmr2RFRewrites.begin(); it != m_dmr2RFRewrites.end(); ++it) {
@@ -646,7 +655,7 @@ int CDMRGateway::run()
 					}
 				}
 
-				if (result == RESULT_UNMATCHED) {
+				if (result == RESULT_UNMATCHED && net3ok) {
 					if (m_dmrNetwork3 != NULL) {
 						// Rewrite the slot and/or TG or neither
 
@@ -672,7 +681,7 @@ int CDMRGateway::run()
 					}
 				}
 ///////////////////////////
-				if (result == RESULT_UNMATCHED) {
+				if (result == RESULT_UNMATCHED && net4ok) {
 					if (m_dmrNetwork4 != NULL) {
 						// Rewrite the slot and/or TG or neither
 						for (std::vector<CRewrite*>::iterator it = m_dmr4RFRewrites.begin(); it != m_dmr4RFRewrites.end(); ++it) {
@@ -699,7 +708,7 @@ int CDMRGateway::run()
 					}
 				}
 ////////////////////////////
-				if (result == RESULT_UNMATCHED) {
+				if (result == RESULT_UNMATCHED && net5ok) {
 					if (m_dmrNetwork5 != NULL) {
 						// Rewrite the slot and/or TG or neither
 						for (std::vector<CRewrite*>::iterator it = m_dmr5RFRewrites.begin(); it != m_dmr5RFRewrites.end(); ++it) {
@@ -723,7 +732,7 @@ int CDMRGateway::run()
 					}
 				}
 
-				if (result == RESULT_UNMATCHED) {
+				if (result == RESULT_UNMATCHED && net6ok) {
 					if (m_dmrNetwork6 != NULL) {
 						// Rewrite the slot and/or TG or neither
 
@@ -747,7 +756,7 @@ int CDMRGateway::run()
 						}
 					}
 				}
-				if (result == RESULT_UNMATCHED) {
+				if (result == RESULT_UNMATCHED && net1ok) {
 					if (m_dmrNetwork1 != NULL) {
 
 						for (std::vector<CRewrite*>::iterator it = m_dmr1Passalls.begin(); it != m_dmr1Passalls.end(); ++it) {
@@ -765,13 +774,13 @@ int CDMRGateway::run()
 								m_status[slotNo] = DMRGWS_DMRNETWORK1;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-					if (trace ) LogDebug("Rule Trace, RF transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+							if (trace ) LogDebug("Rule Trace, RF transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 							}
 						}
 					}
 				}
 
-				if (result == RESULT_UNMATCHED) {
+				if (result == RESULT_UNMATCHED && net2ok) {
 					if (m_dmrNetwork2 != NULL) {
 
 						for (std::vector<CRewrite*>::iterator it = m_dmr2Passalls.begin(); it != m_dmr2Passalls.end(); ++it) {
@@ -795,7 +804,7 @@ int CDMRGateway::run()
 					}
 				}
 
-				if (result == RESULT_UNMATCHED) {
+				if (result == RESULT_UNMATCHED && net3ok) {
 					if (m_dmrNetwork3 != NULL) {
 
 						for (std::vector<CRewrite*>::iterator it = m_dmr3Passalls.begin(); it != m_dmr3Passalls.end(); ++it) {
@@ -819,7 +828,7 @@ int CDMRGateway::run()
 					}
 				}
 
-				if (result == RESULT_UNMATCHED) {
+				if (result == RESULT_UNMATCHED && net4ok) {
 					if (m_dmrNetwork4 != NULL) {
 
 						for (std::vector<CRewrite*>::iterator it = m_dmr4Passalls.begin(); it != m_dmr4Passalls.end(); ++it) {
@@ -844,7 +853,7 @@ int CDMRGateway::run()
 					}
 				}
 
-				if (result == RESULT_UNMATCHED) {
+				if (result == RESULT_UNMATCHED && net5ok) {
 					if (m_dmrNetwork5 != NULL) {
 
 						for (std::vector<CRewrite*>::iterator it = m_dmr5Passalls.begin(); it != m_dmr5Passalls.end(); ++it) {
@@ -868,7 +877,7 @@ int CDMRGateway::run()
 					}
 				}
 
-				if (result == RESULT_UNMATCHED) {
+				if (result == RESULT_UNMATCHED && net6ok) {
 					if (m_dmrNetwork6 != NULL) {
 						if (net6ok == false) LogInfo("Net6OK = False");
 						for (std::vector<CRewrite*>::iterator it = m_dmr6Passalls.begin(); it != m_dmr6Passalls.end(); ++it) {
@@ -904,7 +913,7 @@ int CDMRGateway::run()
 
 		if (m_dmrNetwork1 != NULL) {
 			ret = m_dmrNetwork1->read(data);
-			if (ret && selnet == 1) {
+			if (ret && net1ok) {
 				unsigned int slotNo = data.getSlotNo();
 				unsigned int srcId  = data.getSrcId();
 				unsigned int dstId  = data.getDstId();
@@ -954,7 +963,7 @@ int CDMRGateway::run()
 
 		if (m_dmrNetwork2 != NULL) {
 			ret = m_dmrNetwork2->read(data);
-			if (ret && selnet == 2) {
+			if (ret && net2ok) {
 				unsigned int slotNo = data.getSlotNo();
 				unsigned int srcId  = data.getSrcId();
 				unsigned int dstId  = data.getDstId();
@@ -1004,7 +1013,7 @@ int CDMRGateway::run()
 
 		if (m_dmrNetwork3 != NULL) {
 			ret = m_dmrNetwork3->read(data);
-			if (ret && selnet == 3) {
+			if (ret && net3ok) {
 				unsigned int slotNo = data.getSlotNo();
 				unsigned int srcId = data.getSrcId();
 				unsigned int dstId = data.getDstId();
@@ -1055,7 +1064,7 @@ int CDMRGateway::run()
 
 		if (m_dmrNetwork4 != NULL) {
 			ret = m_dmrNetwork4->read(data);
-			if (ret && selnet ==4 ) {
+			if (ret && net4ok ) {
 				unsigned int slotNo = data.getSlotNo();
 				unsigned int srcId = data.getSrcId();
 				unsigned int dstId = data.getDstId();
@@ -1109,7 +1118,7 @@ int CDMRGateway::run()
 
 		if (m_dmrNetwork5 != NULL) {
 			ret = m_dmrNetwork5->read(data);
-			if (ret && selnet == 5) {
+			if (ret && net5ok) {
 				unsigned int slotNo = data.getSlotNo();
 				unsigned int srcId = data.getSrcId();
 				unsigned int dstId = data.getDstId();
@@ -1160,7 +1169,7 @@ int CDMRGateway::run()
 
 		if (m_dmrNetwork6 != NULL) {
 			ret = m_dmrNetwork6->read(data);
-			if (ret && selnet == 6) {
+			if (ret && net6ok) {
 				unsigned int slotNo = data.getSlotNo();
 				unsigned int srcId = data.getSrcId();
 				unsigned int dstId = data.getDstId();
