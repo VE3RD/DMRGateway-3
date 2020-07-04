@@ -545,14 +545,6 @@ int CDMRGateway::run()
                        	 		net4ok=false;
                         		net5ok=false;
                         		net6ok=false;
-				        switch(selnet) {
-        					case 1 : if (m_dmrNetwork1 != NULL)  net1ok=true;
-        					case 2 : if (m_dmrNetwork2 != NULL)  net2ok=true;
-        					case 3 : if (m_dmrNetwork3 != NULL)  net3ok=true;
-        					case 4 : if (m_dmrNetwork4 != NULL)  net4ok=true;
-        					case 5 : if (m_dmrNetwork5 != NULL)  net5ok=true;
-        					case 6 : if (m_dmrNetwork6 != NULL)  net6ok=true;
-					}
      //                   		if (m_dmrNetwork1 != NULL && ctrlCode == 0 && (selnet==1 || selnet==0)) net1ok=true;
      //                   		if (m_dmrNetwork2 != NULL && ctrlCode == 0 && (selnet==2 || selnet==0)) net2ok=true;
 	//
@@ -571,6 +563,8 @@ int CDMRGateway::run()
                                 	selnet = dstId-90000;
 					if (trace) LogInfo("Selected 9000x Network = %d",selnet);
   
+                        	}
+
         	 	        	net1ok=false;
                         		net1ok=false;
                         		net2ok=false;
@@ -579,21 +573,15 @@ int CDMRGateway::run()
                         		net5ok=false;
                         		net6ok=false;
 
-                        		if (m_dmrNetwork1 != NULL && ctrlCode == 1 && (selnet==1 || selnet==0)) net1ok=true;
-                        		if (m_dmrNetwork2 != NULL && ctrlCode == 1 && (selnet==2 || selnet==0)) net2ok=true;
+				 switch(selnet) {
+        					case 1 : if (m_dmrNetwork1 != NULL)  net1ok=true;
+        					case 2 : if (m_dmrNetwork2 != NULL)  net2ok=true;
+        					case 3 : if (m_dmrNetwork3 != NULL)  net3ok=true;
+        					case 4 : if (m_dmrNetwork4 != NULL)  net4ok=true;
+        					case 5 : if (m_dmrNetwork5 != NULL)  net5ok=true;
+        					case 6 : if (m_dmrNetwork6 != NULL)  net6ok=true;
+				}
 
-                        		if (m_dmrNetwork3 != NULL && ctrlCode == 1 && (selnet==3 || selnet==0)) net3ok=true;
-                        		if (m_dmrNetwork3 != NULL && ctrlCode == 1 && (selnet==7 || selnet==0)) net3ok=true;
-
-                        		if (m_dmrNetwork4 != NULL && ctrlCode == 1 && (selnet==4 || selnet==0)) net4ok=true;
-                        		if (m_dmrNetwork5 != NULL && ctrlCode == 1 && (selnet==5 || selnet==0)) net5ok=true;
-                        		if (m_dmrNetwork6 != NULL && ctrlCode == 1 && (selnet==6 || selnet==0)) net6ok=true;
-//                                  if (voice != NULL) {
-//                                        voice->linkedToNet(selnet,dstId);
-//                                        ctrlCode = 8;
-//                                }
-
-                        	}
 
 				if ( trace ) {
 					LogInfo("RF transmission: Net=%u, Slot=%u Src=%u Dst=%s%u", selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
