@@ -8,12 +8,15 @@
 
 sudo mount -o remount,rw /
 
+sudo git pull
+sudo make
 sudo dmrgateway.service stop
 if [ ! -f /usr/local/bin/DMRGateway.orig ]; then
  	sudo cp /usr/local/bin/DMRGateway  /usr/local/bin/DMRGateway.orig 
 fi
 sudo cp ./DMRGateway /usr/local/bin/
 sudo dmrgateway.service start
+sleep 2
 sudo mmdvmhost.service restart
 
 
