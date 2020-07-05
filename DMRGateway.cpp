@@ -405,14 +405,20 @@ int CDMRGateway::run()
 
 	int StartNet = m_conf.getStartNet();
         selnet = StartNet;
-        LogInfo("Network %d Selectd for StartUp",selnet);
+        LogInfo("Network %d Selected for StartUp",selnet);
         switch(StartNet) {
         case 1 : net1ok = true;
+		break;
         case 2 : net2ok = true;
+		break;
         case 3 : net3ok = true;
+		break;
         case 4 : net4ok = true;
+		break;
         case 5 : net5ok = true;
+		break;
         case 6 : net6ok = true;
+		break;
         }
 
 
