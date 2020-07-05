@@ -529,31 +529,21 @@ int CDMRGateway::run()
 
                                 ctrlCode=0;
 
-                       		if ( dstId > 999999  && dstId != storedtg) {
+                       		if ( dstId > 999999 && dstId != storedtg) {
 					storedtg=dstId;
                                 	if ( trace ) LogInfo("Radio TG Keyed = %d",dstId);
-                                	mult = (dstId / 1000000);
+                                	mult = ( dstId / 1000000 );
                                 	selnet = mult;
                                 	if (trace ) LogInfo("Calculated Network = %d",mult);
-               //                 	dstId = dstId - (mult * 1000000);
                                 	LogDebug("Calculated TG = %d",dstId);
 					if (trace) LogInfo("Selected 7x Network = %d",selnet);
-        	 	        	net1ok=false;
-                        		net1ok=false;
-                        		net2ok=false;
-                        		net3ok=false;
-                       	 		net4ok=false;
-                        		net5ok=false;
-                        		net6ok=false;
-     //                   		if (m_dmrNetwork1 != NULL && ctrlCode == 0 && (selnet==1 || selnet==0)) net1ok=true;
-     //                   		if (m_dmrNetwork2 != NULL && ctrlCode == 0 && (selnet==2 || selnet==0)) net2ok=true;
-	//
-    //                    		if (m_dmrNetwork3 != NULL && ctrlCode == 0 && (selnet==3 || selnet==0)) net3ok=true;
-    //                    		if (m_dmrNetwork3 != NULL && ctrlCode == 0 && (selnet==7 || selnet==0)) net3ok=true;
-
-    //                    		if (m_dmrNetwork4 != NULL && ctrlCode == 0 && (selnet==4 || selnet==0)) net4ok=true;
-    //                    		if net4ok == false if (m_dmrNetwork5 != NULL && ctrlCode == 0 && (selnet==5 || selnet==0)) net5ok=true;
-    //                    		if net4ok == false && net5ok=false if (m_dmrNetwork6 != NULL && ctrlCode == 0 && (selnet==6 || selnet==0)) net6ok=true;
+        	 	        	net1ok = false;
+                        		net1ok = false;
+                        		net2ok = false;
+                        		net3ok = false;
+                       	 		net4ok = false;
+                        		net5ok = false;
+                        		net6ok = false;
                         	}
 
                        		if ( dstId >= 90000 && dstId <= 90007 && dstId != storedtg ){
@@ -572,25 +562,34 @@ int CDMRGateway::run()
                        	 		net4ok=false;
                         		net5ok=false;
                         		net6ok=false;
+				
+				if ( trace ) LogInfo(" Active Network %d", selnet);
 
-				 switch(selnet) {
-        					case 1 : if (m_dmrNetwork1 != NULL)  net1ok=true;
-        					case 2 : if (m_dmrNetwork2 != NULL)  net2ok=true;
-        					case 3 : if (m_dmrNetwork3 != NULL)  net3ok=true;
-        					case 4 : if (m_dmrNetwork4 != NULL)  net4ok=true;
-        					case 5 : if (m_dmrNetwork5 != NULL)  net5ok=true;
-        					case 6 : if (m_dmrNetwork6 != NULL)  net6ok=true;
+				 switch( selnet ) {
+        					case 1 : if ( m_dmrNetwork1 != NULL )  net1ok=true;
+							break;
+        					case 2 : if ( m_dmrNetwork2 != NULL )  net2ok=true;
+							break;
+        					case 3 : if ( m_dmrNetwork3 != NULL )  net3ok=true;
+							break;
+        					case 4 : if ( m_dmrNetwork4 != NULL )  net4ok=true;
+							break;
+        					case 5 : if ( m_dmrNetwork5 != NULL )  net5ok=true;
+							break;
+        					case 6 : if ( m_dmrNetwork6 != NULL )  net6ok=true;
+							break;
 				}
-
-
+unsigned int cnt =0;
+				if (net1ok) cnt=cnt+1; 
+				if (net2ok) cnt=cnt+1; 
+				if (net3ok) cnt=cnt+1; 
+				if (net4ok) cnt=cnt+1; 
+				if (net5ok) cnt=cnt+1; 
+				if (net6ok) cnt=cnt+1; 
+		
 				if ( trace ) {
+					LogInfo ("Test NetOK Count = %d",cnt);
 					LogInfo("RF transmission: Net=%u, Slot=%u Src=%u Dst=%s%u", selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
-					if (net1ok) LogInfo(" Network 1 Live %d", net1ok);
-					if (net2ok) LogInfo(" Network 2 Live %d", net2ok);
-					if (net3ok) LogInfo(" Network 3 Live %d", net3ok);
-					if (net4ok) LogInfo(" Network 4 Live %d", net4ok);
-					if (net5ok) LogInfo(" Network 5 Live %d", net5ok);
-					if (net6ok) LogInfo(" Network 6 Live %d", net6ok);
 				}
 
 				if (m_dmrNetwork1 != NULL && net1ok) {
