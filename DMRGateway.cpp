@@ -404,6 +404,9 @@ int CDMRGateway::run()
 	LogMessage("MMDVM has connected");
 
 	int StartNet = m_conf.getStartNet();
+
+	if  ( StartNet <= 0 ) StartNet=4;
+
         selnet = StartNet;
         LogInfo("Network %d Selected for StartUp",selnet);
         switch(StartNet) {
@@ -917,10 +920,11 @@ unsigned int cnt =0;
 					dmr1SrcId[slotNo] = srcId;
 					dmr1DstId[slotNo] = dstId;
 					trace = true;
+
+					LogInfo("Rule Trace, Network 1 Transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+
 				}
 
-				if (trace)
-					LogDebug("Rule Trace, network 1 transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 
 				// Rewrite the slot and/or TG or neither
 				bool rewritten = false;
@@ -967,10 +971,9 @@ unsigned int cnt =0;
 					dmr2SrcId[slotNo] = srcId;
 					dmr2DstId[slotNo] = dstId;
 					trace = true;
+					LogInfo("Rule Trace, Network 2 Transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 				}
 
-				if (trace)
-					LogDebug("Rule Trace, network 2 transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 
 				// Rewrite the slot and/or TG or neither
 				bool rewritten = false;
@@ -1017,10 +1020,9 @@ unsigned int cnt =0;
 					dmr3SrcId[slotNo] = srcId;
 					dmr3DstId[slotNo] = dstId;
 					trace = true;
+					LogInfo("Rule Trace, Network 3 Transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 				}
 
-				if (trace)
-					LogDebug("Rule Trace, network 3 transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 
 				// Rewrite the slot and/or TG or neither
 				bool rewritten = false;
@@ -1068,10 +1070,8 @@ unsigned int cnt =0;
 					dmr4SrcId[slotNo] = srcId;
 					dmr4DstId[slotNo] = dstId;
 					trace = true;
+					LogInfo("Rule Trace, Network 4 Transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 				}
-
-				if (trace)
-					LogDebug("Rule Trace, network 4 transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 
 				// Rewrite the slot and/or TG or neither
 				bool rewritten = false;
@@ -1093,8 +1093,8 @@ unsigned int cnt =0;
 						m_status[slotNo] = DMRGWS_DMRNETWORK4;
 						timer[slotNo]->setTimeout(netTimeout);
 						timer[slotNo]->start();
-				if (trace)
-					LogDebug("Rule Trace, network 4 transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+	//			if (trace)
+	//				LogInfo("Rule Trace, Network 4 Transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 
 					}
 				}
@@ -1122,10 +1122,9 @@ unsigned int cnt =0;
 					dmr5SrcId[slotNo] = srcId;
 					dmr5DstId[slotNo] = dstId;
 					trace = true;
+					LogInfo("Rule Trace, Network 5 Transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 				}
 
-				if (trace)
-					LogDebug("Rule Trace, network 5 transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 
 				// Rewrite the slot and/or TG or neither
 				bool rewritten = false;
@@ -1173,10 +1172,9 @@ unsigned int cnt =0;
 					dmr6SrcId[slotNo] = srcId;
 					dmr6DstId[slotNo] = dstId;
 					trace = true;
+					LogInfo("Rule Trace, Network 6 Transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 				}
 
-				if (trace)
-					LogDebug("Rule Trace, network 6 transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 
 				// Rewrite the slot and/or TG or neither
 				bool rewritten = false;
