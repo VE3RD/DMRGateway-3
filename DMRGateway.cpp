@@ -404,7 +404,6 @@ int CDMRGateway::run()
 	LogMessage("MMDVM has connected");
 
 	int StartNet = m_conf.getStartNet();
-
 	if  ( StartNet <= 0 ) StartNet=4;
 
         selnet = StartNet;
@@ -532,7 +531,7 @@ int CDMRGateway::run()
 				}
 
 				if (trace)
-					LogDebug("Rule Trace, RF transmission: Net=%u, Slot=%u Src=%u Dst=%s%u", selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					LogDebug("RF transmission RX: Net=%u, Slot=%u Src=%u Dst=%s%u", selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 
 				PROCESS_RESULT result = RESULT_UNMATCHED;
 
@@ -620,7 +619,7 @@ unsigned int cnt =0;
 							timer[slotNo]->setTimeout(rfTimeout);
 							if ( trace ) LogInfo("Data Sent to Network 1");
 							timer[slotNo]->start();
-							if ( trace ) LogDebug("RF transmission: Net=%u Slot=%u Src=%u Dst=%s%u", selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+							if ( trace ) LogDebug("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr1Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 						}
 					}
 				}
@@ -643,8 +642,7 @@ unsigned int cnt =0;
 								m_status[slotNo] = DMRGWS_DMRNETWORK2;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-							if ( trace ) LogInfo("Data Sent to Network 2");
-					if ( trace ) LogDebug("RF transmission: Net=%u Slot=%u Src=%u Dst=%s%u", selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					if ( trace ) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr2Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 
 							}
 						}
@@ -671,7 +669,7 @@ unsigned int cnt =0;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
 							if ( trace ) LogInfo("Data Sent to Network 3");
-					if ( trace ) LogDebug("RF transmission: Net=%u Slot=%u Src=%u Dst=%s%u", selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					if ( trace ) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr3Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 							}
 						}
 					}
@@ -697,8 +695,7 @@ unsigned int cnt =0;
 								m_status[slotNo] = DMRGWS_DMRNETWORK4;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-							if ( trace ) LogInfo("Data Sent to Network 4");
-					if ( trace ) LogDebug("RF transmission: Net=%u Slot=%u Src=%u Dst=%s%u", selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					if ( trace ) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr4Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 							}
 						}
 					}
@@ -722,7 +719,7 @@ unsigned int cnt =0;
 								m_status[slotNo] = DMRGWS_DMRNETWORK5;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-					if ( trace ) LogDebug("Rule Trace, RF transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					if ( trace ) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr5Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 							}
 						}
 					}
@@ -747,7 +744,7 @@ unsigned int cnt =0;
 								m_status[slotNo] = DMRGWS_DMRNETWORK6;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-					if ( trace ) LogDebug("Rule Trace, RF transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					if ( trace ) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr6Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 							}
 						}
 					}
@@ -770,7 +767,7 @@ unsigned int cnt =0;
 								m_status[slotNo] = DMRGWS_DMRNETWORK1;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-							if (trace ) LogDebug("Rule Trace, RF transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+							if (trace ) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr1Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 							}
 						}
 					}
@@ -794,7 +791,7 @@ unsigned int cnt =0;
 								m_status[slotNo] = DMRGWS_DMRNETWORK2;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-					if (trace ) LogDebug("Rule Trace, RF transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					if (trace ) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr2Name.c_str(), selnet,  slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 							}
 						}
 					}
@@ -818,7 +815,7 @@ unsigned int cnt =0;
 								m_status[slotNo] = DMRGWS_DMRNETWORK3;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-					LogDebug("Rule Trace, RF transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					if ( trace) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr3Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 							}
 						}
 					}
@@ -842,7 +839,7 @@ unsigned int cnt =0;
 								m_status[slotNo] = DMRGWS_DMRNETWORK4;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-					if ( trace ) LogDebug("Rule Trace, RF transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					if ( trace ) LogInfo("RF RX: Name=%s Net=%s Slot=%u Src=%u Dst=%s%u", m_dmr4Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 
 							}
 						}
@@ -867,7 +864,7 @@ unsigned int cnt =0;
 								m_status[slotNo] = DMRGWS_DMRNETWORK5;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-							if ( trace ) LogDebug("Rule Trace, RF transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+							if ( trace ) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr5Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 					}
 						}
 					}
@@ -891,7 +888,7 @@ unsigned int cnt =0;
 								m_status[slotNo] = DMRGWS_DMRNETWORK6;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-					if ( trace ) LogDebug("Rule Trace, RF transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					if ( trace ) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr6Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 							}
 						}
 					}
@@ -900,7 +897,7 @@ unsigned int cnt =0;
 
 
 				if (result == RESULT_UNMATCHED && trace)
-					LogDebug("Rule Trace,\tnot matched so rejected");
+					LogInfo("Rule Trace,\tnot matched so rejected");
 			}
 		
 
@@ -920,8 +917,7 @@ unsigned int cnt =0;
 					dmr1SrcId[slotNo] = srcId;
 					dmr1DstId[slotNo] = dstId;
 					trace = true;
-
-					LogInfo("Rule Trace, Network 1 Transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					LogInfo("Network 1 RX Data: Name=%s Slot=%u Src=%u Dst=%s%u", m_dmr1Name.c_str(), slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 
 				}
 
@@ -971,7 +967,7 @@ unsigned int cnt =0;
 					dmr2SrcId[slotNo] = srcId;
 					dmr2DstId[slotNo] = dstId;
 					trace = true;
-					LogInfo("Rule Trace, Network 2 Transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					LogInfo("Network 2 RX Data: Name=%s Slot=%u Src=%u Dst=%s%u", m_dmr2Name.c_str(), slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 				}
 
 
@@ -1020,7 +1016,7 @@ unsigned int cnt =0;
 					dmr3SrcId[slotNo] = srcId;
 					dmr3DstId[slotNo] = dstId;
 					trace = true;
-					LogInfo("Rule Trace, Network 3 Transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					LogInfo("Network 3 RX Data: Name=%s Slot=%u Src=%u Dst=%s%u", m_dmr3Name.c_str(), slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 				}
 
 
@@ -1070,7 +1066,7 @@ unsigned int cnt =0;
 					dmr4SrcId[slotNo] = srcId;
 					dmr4DstId[slotNo] = dstId;
 					trace = true;
-					LogInfo("Rule Trace, Network 4 Transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					LogInfo("Network 4 RX Data: Name=%s Slot=%u Src=%u Dst=%s%u", m_dmr4Name.c_str(), slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 				}
 
 				// Rewrite the slot and/or TG or neither
@@ -1122,7 +1118,7 @@ unsigned int cnt =0;
 					dmr5SrcId[slotNo] = srcId;
 					dmr5DstId[slotNo] = dstId;
 					trace = true;
-					LogInfo("Rule Trace, Network 5 Transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					LogInfo("Network 5 RX Data: Name=%s Slot=%u Src=%u Dst=%s%u", m_dmr5Name.c_str(), slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 				}
 
 
@@ -1172,7 +1168,7 @@ unsigned int cnt =0;
 					dmr6SrcId[slotNo] = srcId;
 					dmr6DstId[slotNo] = dstId;
 					trace = true;
-					LogInfo("Rule Trace, Network 6 Transmission: Slot=%u Src=%u Dst=%s%u", slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					LogInfo("Network 6 RX Data: Name=%s Slot=%u Src=%u Dst=%s%u", m_dmr6Name.c_str(), slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 				}
 
 
