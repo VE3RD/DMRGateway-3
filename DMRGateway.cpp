@@ -404,22 +404,37 @@ int CDMRGateway::run()
 	LogMessage("MMDVM has connected");
 
 	int StartNet = m_conf.getStartNet();
-	if  ( StartNet <= 0 ) StartNet=4;
+	if  ( !StartNet  ) StartNet=4;
 
         selnet = StartNet;
+
         LogInfo("Network %d Selected for StartUp",selnet);
-        switch(StartNet) {
+        net1ok = false;
+	net2ok = false;
+	net3ok = false;
+      	net4ok = false;
+	net5ok = false;
+	net6ok = false;
+//	LogInfo("Rule trace: %s", ruleTrace ? "yes" : "no");
+
+        switch(selnet) {
         case 1 : net1ok = true;
+	LogInfo("Srartup Net1 Test %d", selnet);
 		break;
         case 2 : net2ok = true;
+	LogInfo("Srartup Net2 Test %d", selnet);
 		break;
         case 3 : net3ok = true;
+	LogInfo("Srartup Net3 Test %d", selnet);
 		break;
         case 4 : net4ok = true;
+	LogInfo("Srartup Net4 Test %d", selnet);
 		break;
         case 5 : net5ok = true;
+	LogInfo("Srartup Net5 Test %d", selnet);
 		break;
         case 6 : net6ok = true;
+	LogInfo("Srartup Net6 Test %d", selnet);
 		break;
         }
 
@@ -545,7 +560,6 @@ int CDMRGateway::run()
                                 	if (trace ) LogInfo("Calculated Network = %d",mult);
                                 	LogDebug("Calculated TG = %d",dstId);
 					if (trace) LogInfo("Selected 7x Network = %d",selnet);
-        	 	        	net1ok = false;
                         		net1ok = false;
                         		net2ok = false;
                         		net3ok = false;
@@ -600,6 +614,16 @@ unsigned int cnt =0;
 					LogInfo("RF transmission: Net=%u, Slot=%u Src=%u Dst=%s%u", selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 				}
 
+	if ( trace ) {
+		LogInfo("Net1OK %s", net1ok ? "yes" : "no");
+		LogInfo("Net2OK %s", net2ok ? "yes" : "no");
+		LogInfo("Net3OK %s", net3ok ? "yes" : "no");
+		LogInfo("Net4OK %s", net4ok ? "yes" : "no");
+		LogInfo("Net5OK %s", net5ok ? "yes" : "no");
+		LogInfo("Net6OK %s", net6ok ? "yes" : "no");
+	}
+
+
 				if (m_dmrNetwork1 != NULL && net1ok) {
 
 					// Rewrite the slot and/or TG or neither
@@ -612,6 +636,8 @@ unsigned int cnt =0;
 					}
 
 					if (result == RESULT_MATCHED && net1ok && ctrlCode == 0) {
+							if (trace) LogInfo("Network 1 Matched %d & Net1OK %s",selnet,net1ok ? "yes" : "no");
+
 						if (m_status[slotNo] == DMRGWS_NONE || m_status[slotNo] == DMRGWS_DMRNETWORK1) {
 							rewrite(m_dmr1SrcRewrites, data, trace);
 							m_dmrNetwork1->write(data);
@@ -636,6 +662,8 @@ unsigned int cnt =0;
 						}
 
 						if (result == RESULT_MATCHED && net2ok && ctrlCode ==0) {
+							if (trace) LogInfo("Network 2 Matched %d & Net2OK %s",selnet,net2ok  ? "yes" : "no");
+
 							if (m_status[slotNo] == DMRGWS_NONE || m_status[slotNo] == DMRGWS_DMRNETWORK2) {
 								rewrite(m_dmr2SrcRewrites, data, trace);
 								m_dmrNetwork2->write(data);
@@ -662,6 +690,8 @@ unsigned int cnt =0;
 						}
 
 						if (result == RESULT_MATCHED && net3ok && ctrlCode == 0) {
+							if (trace) LogInfo("Network 3 Matched %d & Net3OK %s",selnet,net3ok ? "yes" : "no");
+
 							if (m_status[slotNo] == DMRGWS_NONE || m_status[slotNo] == DMRGWS_DMRNETWORK3) {
 								rewrite(m_dmr3SrcRewrites, data, trace);
 								m_dmrNetwork3->write(data);
@@ -687,8 +717,7 @@ unsigned int cnt =0;
 						}
 
 						if (result == RESULT_MATCHED && net4ok && ctrlCode == 0) {
-							if (trace) LogInfo("Network 4 Matched %d & Net4OK %d",selnet,net4ok);
-
+							if (trace) LogInfo("Network 4 Matched %d & Net4OK %s",selnet,net4ok ? "yes" : "no");
 							if (m_status[slotNo] == DMRGWS_NONE || m_status[slotNo] == DMRGWS_DMRNETWORK4) {
 								rewrite(m_dmr4SrcRewrites, data, trace);
 								m_dmrNetwork4->write(data);
@@ -713,6 +742,7 @@ unsigned int cnt =0;
 						}
 
 						if (result == RESULT_MATCHED && net5ok && ctrlCode == 0) {
+							if (trace) LogInfo("Network 5 Matched %d & Net5OK %s",selnet,net5ok ? "yes" : "no");
 							if (m_status[slotNo] == DMRGWS_NONE || m_status[slotNo] == DMRGWS_DMRNETWORK5) {
 								rewrite(m_dmr5SrcRewrites, data, trace);
 								m_dmrNetwork5->write(data);
@@ -738,6 +768,9 @@ unsigned int cnt =0;
 						}
 
 						if (result == RESULT_MATCHED && net6ok && ctrlCode == 0) {
+							if (trace) LogInfo("Network 6 Matched %d & Net6OK %s",selnet,net6ok ? "yes" : "no");
+//	LogInfo("Net6OK %s", net6ok ? "yes" : "no");
+
 							if (m_status[slotNo] == DMRGWS_NONE || m_status[slotNo] == DMRGWS_DMRNETWORK6) {
 								rewrite(m_dmr6SrcRewrites, data, trace);
 								m_dmrNetwork6->write(data);
