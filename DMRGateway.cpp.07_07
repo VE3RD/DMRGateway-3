@@ -60,7 +60,6 @@ const unsigned char COLOR_CODE = 3U;
 static bool m_killed = false;
 static int  m_signal = 0;
 static int mult = 0;
-unsigned int rdstId = 0;
 static int ctrlCode = 0;
 static int selnet = 0;
 unsigned int  storedtg =0;	
@@ -70,9 +69,6 @@ static bool net3ok = false;
 static bool net4ok = false;
 static bool net5ok = false;
 static bool net6ok = false;
-static int  locknet = 0;
-
-void ClearNetworks();
 
 #if !defined(_WIN32) && !defined(_WIN64)
 static void sigHandler(int signum)
@@ -413,15 +409,12 @@ int CDMRGateway::run()
         selnet = StartNet;
 
         LogInfo("Network %d Selected for StartUp",selnet);
-	ClearNetworks();
-
-//      net1ok = false;
-//	net2ok = false;
-//	net3ok = false;
-//      net4ok = false;
-//	net5ok = false;
-//	net6ok = false;
-//
+        net1ok = false;
+	net2ok = false;
+	net3ok = false;
+      	net4ok = false;
+	net5ok = false;
+	net6ok = false;
 //	LogInfo("Rule trace: %s", ruleTrace ? "yes" : "no");
 
         switch(selnet) {
@@ -551,7 +544,6 @@ int CDMRGateway::run()
 					rfDstId[slotNo] = dstId;
 					trace = true;
 				}
-trace = true;
 
 				if (trace)
 					LogDebug("RF transmission RX: Net=%u, Slot=%u Src=%u Dst=%s%u", selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
@@ -560,50 +552,38 @@ trace = true;
 
                                 ctrlCode=0;
 
-				if ( dstId == 90000 ) {
-				 	locknet=0;
-					LogInfo("Network Lock Released!");
-					storedtg = 0;
-					ClearNetworks();
-					ctrlCode = 1;
-				}
+                       		if ( dstId > 999999 && dstId != storedtg) {
+					storedtg=dstId;
+                                	if ( trace ) LogInfo("Radio TG Keyed = %d",dstId);
+                                	mult = ( dstId / 1000000 );
+                                	selnet = mult;
+                                	if (trace ) LogInfo("Calculated Network = %d",mult);
+                                	LogDebug("Calculated TG = %d",dstId);
+					if (trace) LogInfo("Selected 7x Network = %d",selnet);
+                        		net1ok = false;
+                        		net2ok = false;
+                        		net3ok = false;
+                       	 		net4ok = false;
+                        		net5ok = false;
+                        		net6ok = false;
+                        	}
 
-
-//                       		if ( dstId >= 90000 && dstId <= 90007 && dstId != storedtg ){
-                       		if ( dstId >= 90000 && dstId <= 90007 ){
- //                      		if ( dstId >= 90000 && dstId <= 90007 && ctrlCode == 0 ){
-					ClearNetworks(); 
+                       		if ( dstId >= 90000 && dstId <= 90007 && dstId != storedtg ){
                                 	ctrlCode=1;
+					storedtg=dstId;
                                 	if ( trace ) LogInfo("TESTAA Network keyed: %d", dstId);
                                 	selnet = dstId-90000;
 					if (trace) LogInfo("Selected 9000x Network = %d",selnet);
-  					locknet = selnet;
-					LogInfo("Network Locked = %d",selnet);
+  
                         	}
 
-				if ( locknet == 0 ) {
-                       			if ( dstId > 999999 && dstId != storedtg) {					
-						storedtg=dstId;
-						ClearNetworks();
-                                		if ( trace ) LogInfo("Radio TG Keyed = %d",dstId);
-                                		mult = ( dstId / 1000000 );
-                                		selnet = mult;
-                                		if (trace ) LogInfo("Calculated Network = %d",mult);
-                                		LogDebug("Calculated TG = %d",dstId);
-						LogInfo("Selected 7x Network = %d",selnet);
-		                 	}
-				}
-				else if ( locknet != 0 ) {
-                                                selnet = locknet;
-						storedtg=dstId; 
-				}
-
-				
-//					ClearNetworks();
-				
-				if ( rdstId != dstId ) {
-					rdstId = dstId;
-				}
+        	 	        	net1ok=false;
+                        		net1ok=false;
+                        		net2ok=false;
+                        		net3ok=false;
+                       	 		net4ok=false;
+                        		net5ok=false;
+                        		net6ok=false;
 				
 				if ( trace ) LogInfo(" Active Network %d", selnet);
 
@@ -621,8 +601,7 @@ trace = true;
         					case 6 : if ( m_dmrNetwork6 != NULL )  net6ok=true;
 							break;
 				}
-				
-				unsigned int cnt =0;
+unsigned int cnt =0;
 				if (net1ok) cnt=cnt+1; 
 				if (net2ok) cnt=cnt+1; 
 				if (net3ok) cnt=cnt+1; 
@@ -635,15 +614,14 @@ trace = true;
 					LogInfo("RF transmission: Net=%u, Slot=%u Src=%u Dst=%s%u", selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 				}
 
-				if ( trace ) {
-					LogInfo("Net1OK:%s    Net2OK:%s   Net3OK:%s", net1ok ? "yes" : "no", net2ok ? "yes" : "no", net3ok ? "yes" : "no" );
-					LogInfo("Net4OK:%s    Net5OK:%s   Net6OK:%s", net4ok ? "yes" : "no", net5ok ? "yes" : "no", net6ok ? "yes" : "no" );
-					LogInfo("Network Locked = %d", locknet);
-//					LogInfo("Net3OK:%s", net3ok ? "yes" : "no");
-//					LogInfo("Net4OK:%s", net4ok ? "yes" : "no");
-//					LogInfo("Net5OK:%s", net5ok ? "yes" : "no");
-//					LogInfo("Net6OK:%s", net6ok ? "yes" : "no");
-				}
+	if ( trace ) {
+		LogInfo("Net1OK %s", net1ok ? "yes" : "no");
+		LogInfo("Net2OK %s", net2ok ? "yes" : "no");
+		LogInfo("Net3OK %s", net3ok ? "yes" : "no");
+		LogInfo("Net4OK %s", net4ok ? "yes" : "no");
+		LogInfo("Net5OK %s", net5ok ? "yes" : "no");
+		LogInfo("Net6OK %s", net6ok ? "yes" : "no");
+	}
 
 
 				if (m_dmrNetwork1 != NULL && net1ok) {
@@ -816,14 +794,13 @@ trace = true;
 						}
 
 						if (result == RESULT_MATCHED && net1ok && ctrlCode == 0) {
-							if (trace) LogInfo("Network 1 Matched PassAll %d & Net1OK %s",selnet,net2ok  ? "yes" : "no");
 							if (m_status[slotNo] == DMRGWS_NONE || m_status[slotNo] == DMRGWS_DMRNETWORK1) {
 								rewrite(m_dmr1SrcRewrites, data, trace);
 								m_dmrNetwork1->write(data);
 								m_status[slotNo] = DMRGWS_DMRNETWORK1;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-							if (trace ) LogInfo("RF RX PassAll: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr1Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+							if (trace ) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr1Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 							}
 						}
 					}
@@ -841,15 +818,13 @@ trace = true;
 						}
 
 						if (result == RESULT_MATCHED && net2ok && ctrlCode == 0) {
-							if (trace) LogInfo("Network 2 Matched PassAll %d & Net2OK %s",selnet,net2ok  ? "yes" : "no");
-
 							if (m_status[slotNo] == DMRGWS_NONE || m_status[slotNo] == DMRGWS_DMRNETWORK2) {
 								rewrite(m_dmr2SrcRewrites, data, trace);
 								m_dmrNetwork2->write(data);
 								m_status[slotNo] = DMRGWS_DMRNETWORK2;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-					if (trace ) LogInfo("RF RX PassAll: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr2Name.c_str(), selnet,  slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					if (trace ) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr2Name.c_str(), selnet,  slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 							}
 						}
 					}
@@ -867,15 +842,13 @@ trace = true;
 						}
 
 						if (result == RESULT_MATCHED && net3ok && ctrlCode == 0) {
-							if (trace) LogInfo("Network 3 Matched PassAll %d & Net3OK %s",selnet,net3ok  ? "yes" : "no");
-
 							if (m_status[slotNo] == DMRGWS_NONE || m_status[slotNo] == DMRGWS_DMRNETWORK3) {
 								rewrite(m_dmr3SrcRewrites, data, trace);
 								m_dmrNetwork3->write(data);
 								m_status[slotNo] = DMRGWS_DMRNETWORK3;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-					if ( trace) LogInfo("RF RX PassAll: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr3Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					if ( trace) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr3Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 							}
 						}
 					}
@@ -893,15 +866,13 @@ trace = true;
 						}
 
 						if (result == RESULT_MATCHED && net4ok && ctrlCode == 0) {
-							if (trace) LogInfo("Network 4 Matched PassAll %d & Net4OK %s",selnet,net4ok  ? "yes" : "no");
-
 							if (m_status[slotNo] == DMRGWS_NONE || m_status[slotNo] == DMRGWS_DMRNETWORK4) {
 								rewrite(m_dmr4SrcRewrites, data, trace);
 								m_dmrNetwork4->write(data);
 								m_status[slotNo] = DMRGWS_DMRNETWORK4;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-					if ( trace ) LogInfo("RF RX PassAll: Name=%s Net=%s Slot=%u Src=%u Dst=%s%u", m_dmr4Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					if ( trace ) LogInfo("RF RX: Name=%s Net=%s Slot=%u Src=%u Dst=%s%u", m_dmr4Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 
 							}
 						}
@@ -920,15 +891,13 @@ trace = true;
 						}
 
 						if (result == RESULT_MATCHED && net5ok && ctrlCode == 0) {
-							if (trace) LogInfo("Network 5 Matched PassAll %d & Net5OK %s",selnet,net5ok  ? "yes" : "no");
-
 							if (m_status[slotNo] == DMRGWS_NONE || m_status[slotNo] == DMRGWS_DMRNETWORK5) {
 								rewrite(m_dmr5SrcRewrites, data, trace);
 								m_dmrNetwork5->write(data);
 								m_status[slotNo] = DMRGWS_DMRNETWORK5;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-							if ( trace ) LogInfo("RF RX PassAll: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr5Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+							if ( trace ) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr5Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 					}
 						}
 					}
@@ -946,15 +915,13 @@ trace = true;
 						}
 
 						if (result == RESULT_MATCHED && net6ok && ctrlCode == 0) {
-							if (trace) LogInfo("Network 6 Matched PassAll %d & Net6OK %s",selnet,net6ok  ? "yes" : "no");
-
 							if (m_status[slotNo] == DMRGWS_NONE || m_status[slotNo] == DMRGWS_DMRNETWORK6) {
 								rewrite(m_dmr6SrcRewrites, data, trace);
 								m_dmrNetwork6->write(data);
 								m_status[slotNo] = DMRGWS_DMRNETWORK6;
 								timer[slotNo]->setTimeout(rfTimeout);
 								timer[slotNo]->start();
-					if ( trace ) LogInfo("RF RX PassAll:: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr6Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
+					if ( trace ) LogInfo("RF RX: Name=%s Net=%u Slot=%u Src=%u Dst=%s%u", m_dmr6Name.c_str(), selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 							}
 						}
 					}
@@ -1139,7 +1106,6 @@ trace = true;
 				bool rewritten = false;
 				for (std::vector<CRewrite*>::iterator it = m_dmr4NetRewrites.begin(); it != m_dmr4NetRewrites.end(); ++it) {
 					bool ret = (*it)->process(data, trace);
-//					if (ret && dstId == rdstId) {
 					if (ret) {
 						rewritten = true;
 						break;
@@ -1193,7 +1159,6 @@ trace = true;
 				bool rewritten = false;
 				for (std::vector<CRewrite*>::iterator it = m_dmr5NetRewrites.begin(); it != m_dmr5NetRewrites.end(); ++it) {
 					bool ret = (*it)->process(data, trace);
-//					if (ret && dstId == rdstId) {
 					if (ret) {
 						rewritten = true;
 						break;
@@ -2776,14 +2741,3 @@ void CDMRGateway::processDynamicTGControl()
 		LogWarning("Unknown dynamic TG control message: %s", buffer);
 	}
 }
-void ClearNetworks()
-{
-net1ok=false;
-net2ok=false;
-net3ok=false;
-net4ok=false;
-net5ok=false;
-net6ok=false;
-}
-
-
