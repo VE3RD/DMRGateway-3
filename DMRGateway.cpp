@@ -551,7 +551,6 @@ int CDMRGateway::run()
 					rfDstId[slotNo] = dstId;
 					trace = true;
 				}
-trace = true;
 
 				if (trace)
 					LogDebug("RF transmission RX: Net=%u, Slot=%u Src=%u Dst=%s%u", selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
@@ -560,22 +559,23 @@ trace = true;
 
                                 ctrlCode=0;
 
-				if ( dstId == 90000 ) {
+				if ( dstId == 9007 && dstId != storedtg ) {
 				 	locknet=0;
+					storedtg = dstId;
 					LogInfo("Network Lock Released!");
-					storedtg = 0;
 					ClearNetworks();
 					ctrlCode = 1;
 				}
 
 
 //                       		if ( dstId >= 90000 && dstId <= 90007 && dstId != storedtg ){
-                       		if ( dstId >= 90000 && dstId <= 90007 ){
- //                      		if ( dstId >= 90000 && dstId <= 90007 && ctrlCode == 0 ){
+                       		if ( dstId >= 9000 && dstId <= 9007 && dstId != storedtg ){
+ //                      		if ( dstId >= 9000 && dstId <= 9007 && ctrlCode == 0 ){
 					ClearNetworks(); 
+					storedtg = dstId;
                                 	ctrlCode=1;
                                 	if ( trace ) LogInfo("TESTAA Network keyed: %d", dstId);
-                                	selnet = dstId-90000;
+                                	selnet = dstId-9000;
 					if (trace) LogInfo("Selected 9000x Network = %d",selnet);
   					locknet = selnet;
 					LogInfo("Network Locked = %d",selnet);
@@ -583,7 +583,7 @@ trace = true;
 
 				if ( locknet == 0 ) {
                        			if ( dstId > 999999 && dstId != storedtg) {					
-						storedtg=dstId;
+						storedtg = dstId;
 						ClearNetworks();
                                 		if ( trace ) LogInfo("Radio TG Keyed = %d",dstId);
                                 		mult = ( dstId / 1000000 );
@@ -619,6 +619,14 @@ trace = true;
         					case 5 : if ( m_dmrNetwork5 != NULL )  net5ok=true;
 							break;
         					case 6 : if ( m_dmrNetwork6 != NULL )  net6ok=true;
+							break;
+        					case 0 : if ( m_dmrNetwork1 != NULL )  net1ok=true;
+        						if ( m_dmrNetwork2 != NULL )  net2ok=true;
+        						if ( m_dmrNetwork3 != NULL )  net3ok=true;
+        						if ( m_dmrNetwork4 != NULL )  net4ok=true;
+        						if ( m_dmrNetwork5 != NULL )  net5ok=true;
+        						if ( m_dmrNetwork6 != NULL )  net6ok=true;
+
 							break;
 				}
 				
