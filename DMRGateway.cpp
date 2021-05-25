@@ -494,6 +494,7 @@ int CDMRGateway::run()
 	}
 
 	unsigned int rfTimeout  = m_conf.getRFTimeout();
+
 	unsigned int netTimeout = m_conf.getNetTimeout();
 
 	CTimer* timer[3U];
@@ -539,13 +540,14 @@ int CDMRGateway::run()
 
 		bool ret = m_repeater->read(data);
 		if (ret) {
+
 			unsigned int slotNo = data.getSlotNo();
 			unsigned int srcId = data.getSrcId();
 			unsigned int dstId = data.getDstId();
 			FLCO flco = data.getFLCO();
 
 
-				bool trace = false;
+				bool trace = true;
 				if (ruleTrace && (srcId != rfSrcId[slotNo] || dstId != rfDstId[slotNo])) {
 					rfSrcId[slotNo] = srcId;
 					rfDstId[slotNo] = dstId;
@@ -559,18 +561,7 @@ int CDMRGateway::run()
 
                                 ctrlCode=0;
 
-				if ( dstId == 9007 && dstId != storedtg ) {
-				 	locknet=0;
-					storedtg = dstId;
-					LogInfo("Network Lock Released!");
-					ClearNetworks();
-					ctrlCode = 1;
-				}
-
-
-//                       		if ( dstId >= 90000 && dstId <= 90007 && dstId != storedtg ){
-                       		if ( dstId >= 9000 && dstId <= 9007 && dstId != storedtg ){
- //                      		if ( dstId >= 9000 && dstId <= 9007 && ctrlCode == 0 ){
+                       		if ( dstId > 9000 && dstId < 9007 ){
 					ClearNetworks(); 
 					storedtg = dstId;
                                 	ctrlCode=1;
@@ -578,28 +569,22 @@ int CDMRGateway::run()
                                 	selnet = dstId-9000;
 					if (trace) LogInfo("Selected 9000x Network = %d",selnet);
   					locknet = selnet;
-					LogInfo("Network Locked = %d",selnet);
+					if (trace) LogInfo("Network Locked = %d",selnet);
                         	}
 
-				if ( locknet == 0 ) {
-                       			if ( dstId > 999999 && dstId != storedtg) {					
-						storedtg = dstId;
-						ClearNetworks();
-                                		if ( trace ) LogInfo("Radio TG Keyed = %d",dstId);
-                                		mult = ( dstId / 1000000 );
-                                		selnet = mult;
-                                		if (trace ) LogInfo("Calculated Network = %d",mult);
-                                		LogDebug("Calculated TG = %d",dstId);
-						LogInfo("Selected 7x Network = %d",selnet);
-		                 	}
-				}
-				else if ( locknet != 0 ) {
-                                                selnet = locknet;
-						storedtg=dstId; 
-				}
+                       		if ( dstId > 999999 && dstId != storedtg) {					
+					storedtg = dstId;
+					ClearNetworks();
+                                	if ( trace ) LogInfo("Radio TG Keyed = %d",dstId);
+                                	ctrlCode=0;
+                                	mult = ( dstId / 1000000 );
+                                	selnet = mult;
+					locknet=selnet;
+                                	if (trace ) LogInfo("Calculated Network = %d",mult);
+                                	LogDebug("Calculated TG = %d",dstId);
+					LogInfo("Selected 7x Network = %d",selnet);
+		                 }
 
-				
-//					ClearNetworks();
 				
 				if ( rdstId != dstId ) {
 					rdstId = dstId;
@@ -620,37 +605,18 @@ int CDMRGateway::run()
 							break;
         					case 6 : if ( m_dmrNetwork6 != NULL )  net6ok=true;
 							break;
-        					case 0 : if ( m_dmrNetwork1 != NULL )  net1ok=true;
-        						if ( m_dmrNetwork2 != NULL )  net2ok=true;
-        						if ( m_dmrNetwork3 != NULL )  net3ok=true;
-        						if ( m_dmrNetwork4 != NULL )  net4ok=true;
-        						if ( m_dmrNetwork5 != NULL )  net5ok=true;
-        						if ( m_dmrNetwork6 != NULL )  net6ok=true;
-
-							break;
 				}
 				
-				unsigned int cnt =0;
-				if (net1ok) cnt=cnt+1; 
-				if (net2ok) cnt=cnt+1; 
-				if (net3ok) cnt=cnt+1; 
-				if (net4ok) cnt=cnt+1; 
-				if (net5ok) cnt=cnt+1; 
-				if (net6ok) cnt=cnt+1; 
 		
 				if ( trace ) {
-					LogInfo ("Test NetOK Count = %d",cnt);
+
 					LogInfo("RF transmission: Net=%u, Slot=%u Src=%u Dst=%s%u", selnet, slotNo, srcId, flco == FLCO_GROUP ? "TG" : "", dstId);
 				}
 
 				if ( trace ) {
 					LogInfo("Net1OK:%s    Net2OK:%s   Net3OK:%s", net1ok ? "yes" : "no", net2ok ? "yes" : "no", net3ok ? "yes" : "no" );
 					LogInfo("Net4OK:%s    Net5OK:%s   Net6OK:%s", net4ok ? "yes" : "no", net5ok ? "yes" : "no", net6ok ? "yes" : "no" );
-					LogInfo("Network Locked = %d", locknet);
-//					LogInfo("Net3OK:%s", net3ok ? "yes" : "no");
-//					LogInfo("Net4OK:%s", net4ok ? "yes" : "no");
-//					LogInfo("Net5OK:%s", net5ok ? "yes" : "no");
-//					LogInfo("Net6OK:%s", net6ok ? "yes" : "no");
+					LogInfo("Network Locked = %d", selnet);
 				}
 
 
