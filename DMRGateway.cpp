@@ -71,6 +71,9 @@ static bool net4ok = false;
 static bool net5ok = false;
 static bool net6ok = false;
 static int  locknet = 0;
+static int  locknet1 = 0;
+static int  locknet2 = 0;
+
 
 void ClearNetworks();
 
@@ -560,7 +563,11 @@ int CDMRGateway::run()
 				PROCESS_RESULT result = RESULT_UNMATCHED;
 
                                 ctrlCode=0;
-
+			
+				if (dstID == 9000 ) {
+					ClearNetworks();				
+				}
+			
                        		if ( dstId > 9000 && dstId < 9007 ){
 					ClearNetworks(); 
 					storedtg = dstId;
@@ -568,19 +575,21 @@ int CDMRGateway::run()
                                 	if ( trace ) LogInfo("TESTAA Network keyed: %d", dstId);
                                 	selnet = dstId-9000;
 					if (trace) LogInfo("Selected 9000x Network = %d",selnet);
-  					locknet = selnet;
+  					locknet1 = selnet;
+					locknet2 = 0;
 					if (trace) LogInfo("Network Locked = %d",selnet);
                         	}
 
-                       		if ( dstId > 999999 && dstId != storedtg) {					
+                       		if ( dstId > 999999 && locknet1 = 0 && dstId != storedtg) {					
 					storedtg = dstId;
-					ClearNetworks();
+			//		ClearNetworks();
                                 	if ( trace ) LogInfo("Radio TG Keyed = %d",dstId);
                                 	ctrlCode=0;
                                 	mult = ( dstId / 1000000 );
                                 	selnet = mult;
-					locknet=selnet;
-                                	if (trace ) LogInfo("Calculated Network = %d",mult);
+					locknet2 = selnet;
+					locknet1 = 0;
+					if (trace ) LogInfo("Calculated Network = %d",mult);
                                 	LogDebug("Calculated TG = %d",dstId);
 					LogInfo("Selected 7x Network = %d",selnet);
 		                 }
@@ -2758,6 +2767,8 @@ net3ok=false;
 net4ok=false;
 net5ok=false;
 net6ok=false;
+locknet1=0;
+locknet2=0;
 }
 
 
